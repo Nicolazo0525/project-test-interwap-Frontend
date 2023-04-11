@@ -59,6 +59,18 @@ export default function useVehiculos(){
         metaVehiculo.value = response.data.meta
     }
 
+    
+    const exportVehiculos = async () =>{
+        let response = await localAxios.get('/api/exportar', { responseType: 'blob' })
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'vehiculos.xlsx')
+        document.body.appendChild(link)
+        link.click()
+    }
+
+
     const deleteVehiculos = async(id) =>{
         let response = await localAxios.delete('/api/vehiculos/' + id)
     }
@@ -76,5 +88,6 @@ export default function useVehiculos(){
         getVehiculos,
         getVehiculo,
         errorsVehiculo,
+        exportVehiculos
     }
 }

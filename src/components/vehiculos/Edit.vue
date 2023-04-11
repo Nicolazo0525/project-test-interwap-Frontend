@@ -14,8 +14,6 @@ const props = defineProps({
 const {getVehiculo, placa, telefono, color, estado, updateVehiculo, errorsVehiculo} = useVehiculos()
 const formData = new FormData();
 
-console.log(errorsVehiculo)
-
 onMounted(() => {
     getVehiculo(props.id)
 })

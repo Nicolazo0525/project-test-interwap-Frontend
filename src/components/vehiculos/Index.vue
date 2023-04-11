@@ -9,6 +9,7 @@ const {vehiculos,
         metaVehiculo,
         deleteVehiculos,
         getVehiculos,
+        exportVehiculos,
     } = useVehiculos()
 
 const page = ref(1);
@@ -26,7 +27,10 @@ onMounted(()=>{
         <div class="flex justify-between flex-col md:flex-row">
             <header class="mb-3 text-2xl font-bold">Vehículos</header>
             <router-link :to="{name: 'CreateVehiculo'}" class="w-20 text-center items-center rounded-2xl border-b-4 border-b-blue-600 bg-blue-500 py-3 font-bold text-white hover:bg-blue-400 active:translate-y-[0.125rem] active:border-b-blue-400">Create</router-link>
-
+            <button class="w-20 text-center items-center rounded-2xl border-b-4 border-b-green-600 bg-green-500 py-3 font-bold text-white hover:bg-green-400 active:translate-y-[0.125rem] active:border-b-green-400" @click="exportVehiculos()">
+                Export
+                  
+            </button>
         </div>
 
         <div class="overflow-x-auto rounded-lg border shadow-md">
