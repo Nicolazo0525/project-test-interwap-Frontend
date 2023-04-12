@@ -44,7 +44,7 @@ export default function useVehiculos(){
     const updateVehiculo = async (formData, id) =>{
         try {
             let csrfCookie = await localAxios.get('/sanctum/csrf-cookie');
-        let response = await localAxios.put('api/vehiculos/' + id, formData, csrfCookie)
+            let response = await localAxios.put('api/vehiculos/' + id, formData, csrfCookie)
         } catch (error) {
             if (error.response.status === 422) {
                 errorsVehiculo.value = error.response.data.errors
