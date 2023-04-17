@@ -14,6 +14,7 @@ export default function useVehiculos(){
     const vehiculos = ref([])
     const vehiculo = ref([])
     const metaVehiculo = ref([])
+    const status = ref([])
 
     const errorsVehiculo = ref('')
 
@@ -33,6 +34,8 @@ export default function useVehiculos(){
         try {
             let csrfCookie = await localAxios.get('/sanctum/csrf-cookie');
             let response = await localAxios.post('/api/vehiculos/', formData, csrfCookie)
+            status.value = response.data.status
+            console.log(status)
         } catch (error) {
             if (error.response.status === 422) {
                 errorsVehiculo.value = error.response.data.errors
@@ -45,6 +48,7 @@ export default function useVehiculos(){
         try {
             let csrfCookie = await localAxios.get('/sanctum/csrf-cookie');
             let response = await localAxios.put('api/vehiculos/' + id, formData, csrfCookie)
+            status.value = response.data.status
         } catch (error) {
             if (error.response.status === 422) {
                 errorsVehiculo.value = error.response.data.errors
@@ -61,13 +65,14 @@ export default function useVehiculos(){
 
     
     const exportVehiculos = async () =>{
-        let response = await localAxios.get('/api/exportar', { responseType: 'blob' })
+
+        let response = await localAxios.get('/api/export', { responseType: 'blob' })
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
         link.href = url
         link.setAttribute('download', 'vehiculos.xlsx')
         document.body.appendChild(link)
-        link.click()
+        link.click() 
     }
 
 
@@ -88,6 +93,7 @@ export default function useVehiculos(){
         getVehiculos,
         getVehiculo,
         errorsVehiculo,
-        exportVehiculos
+        exportVehiculos,
+        status,
     }
 }
