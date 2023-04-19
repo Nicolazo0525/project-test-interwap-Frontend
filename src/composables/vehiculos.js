@@ -77,7 +77,14 @@ export default function useVehiculos(){
 
 
     const deleteVehiculos = async(id) =>{
-        let response = await localAxios.delete('/api/vehiculos/' + id)
+        try {
+            let response = await localAxios.delete('/api/vehiculos/' + id)
+            status.value = response.data.status
+        } catch (error) {
+            if (error.response.status === 422) {
+                errorsVehiculo.value = error.response.data.errors
+            }
+        }
     }
     
     return{

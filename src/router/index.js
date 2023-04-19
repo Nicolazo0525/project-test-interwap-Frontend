@@ -22,12 +22,6 @@ const routes = [
         name: "CreateVehiculo",
         component: CreateVehiculo
     },
-    {
-        path: "/modal-delete/:id",
-        name: "ModalDelete",
-        component: ModalDelete,
-        props: true
-    },
 ]
 
 export default createRouter({
