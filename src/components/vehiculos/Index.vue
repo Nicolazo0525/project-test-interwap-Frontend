@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch, computed } from 'vue'
 import VPagination from "@hennge/vue3-pagination";
 import "@hennge/vue3-pagination/dist/vue3-pagination.css";
 import localAxios from '../../localAxios';
@@ -7,26 +7,73 @@ import useVehiculos from '../../composables/vehiculos';
 import Alert from "./Alert.vue"
 import ModalDelete from './ModalDelete.vue';
 
-const {vehiculos,
+const {
+        vehiculos,
         metaVehiculo,
         deleteVehiculos,
         getVehiculos,
         exportVehiculos,
+        searchVehiculos,
         status
     } = useVehiculos()
 
-const page = ref(1);
+const perPage = ref(1);
 const showModal = ref(false)
 const idSelected = ref();
+
+//Search
+const searchText = ref('')
+const searchResult = ref([])
+const vehiculo = ref([])
+const typingTimeout = ref(null)
+
+if (searchText.value.length > 0) {
+    
+    vehiculo.value = getVehiculos(perPage.value, searchText)
+}
+if (searchText.value.length <= 0) {
+    perPage.value = perPage;
+    buscarVehiculos();
+}
 
 function deleteOption(id){
     showModal.value = true
     idSelected.value = id
 }
 
-onMounted(()=>{
-    getVehiculos(page.value)
-})
+//Cambio de página
+const changePage = (page) => {
+    //Asigno lo que contiene el parámetro page a la variable reactiva perPage
+    perPage.value = page;
+    //Renderizo datos de esa página por medio de la función buscarVehiculos
+    buscarVehiculos();
+};
+
+//Variable computada para mostrar el todas las páginas existentes
+const pages = computed(() => {
+    //Creo array
+    const pages = [];
+    //Recorro el array metaVehiculo.value.last_page
+    for (let i = 1; i <= metaVehiculo.value.last_page; i++) {
+        pages.push(i);
+    }
+    //renderizo páginas
+    return pages;
+});
+
+const delayedSearch = () =>{
+    if (typingTimeout.value !== null) {
+        clearTimeout(typingTimeout.value)
+    }
+    typingTimeout.value = setTimeout(buscarVehiculos, 500)
+}
+
+function buscarVehiculos(){
+    vehiculo.value = getVehiculos(perPage.value, searchText.value)
+}
+/* onMounted(()=>{
+    getVehiculos(page.value, searchText.value)
+}) */
 
 </script>
     
@@ -35,13 +82,33 @@ onMounted(()=>{
     <div class="w-11/12 mx-auto rounded-md shadow-md bg-white my-12 p-6  flex justify-start space-y-3 flex-col">
         <!-- <div class="text-xl font-bold">History</div>
         <div>Index</div> -->
-        <div class="flex justify-between flex-col md:flex-row">
-            <header class="mb-3 text-2xl font-bold">Vehículos</header>
-            <router-link :to="{name: 'CreateVehiculo'}" class="w-20 text-center items-center rounded-2xl border-b-4 border-b-blue-600 bg-blue-500 py-3 font-bold text-white hover:bg-blue-400 active:translate-y-[0.125rem] active:border-b-blue-400">Create</router-link>
-            <button class="w-20 text-center items-center rounded-2xl border-b-4 border-b-green-600 bg-green-500 py-3 font-bold text-white hover:bg-green-400 active:translate-y-[0.125rem] active:border-b-green-400" @click="exportVehiculos()">
-                Export
-                  
-            </button>
+        <header class="mb-3 text-2xl font-bold">Vehículos</header>
+        <div class="grid grid-cols-1 md:grid-cols-2">
+            
+            <div class="flex flex-row gap-3">
+                <div class="w-64 flex flex-row items-center rounded-2xl bg-gray-50 px-4 ring-2 ring-gray-200 focus-within:ring-blue-400">
+                    <div>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mx-3 text-gray-400 dark:text-gray-600">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                        </svg>
+                    </div>
+                    <input type="text" placeholder="Search..." v-model="searchText" @keydown="delayedSearch"
+                        class="my-3 w-full border-none bg-transparent outline-none focus:outline-none" />
+                    
+                </div>
+                <!-- <div class="mt-2 flex justify-center">
+                    <button @click="buscarVehiculos" class="w-20 text-center items-center rounded-2xl border-b-4 border-b-blue-600 bg-blue-500 py-3 font-bold text-white hover:bg-blue-400 active:translate-y-[0.125rem] active:border-b-blue-400">Buscar</button>
+                </div> -->
+            </div>
+            
+            <div class="flex justify-end space-x-3 flex-col md:flex-row">
+                <router-link :to="{name: 'CreateVehiculo'}" class="w-20 text-center items-center rounded-2xl border-b-4 border-b-blue-600 bg-blue-500 py-3 font-bold text-white hover:bg-blue-400 active:translate-y-[0.125rem] active:border-b-blue-400">Create</router-link>
+                <a class="w-20 cursor-pointer text-center items-center rounded-2xl border-b-4 border-b-green-600 bg-green-500 py-3 font-bold text-white hover:bg-green-400 active:translate-y-[0.125rem] active:border-b-green-400" @click="exportVehiculos()">
+                    Export
+                      
+                </a>
+            </div>
+            
         </div>
 
         <div class="overflow-x-auto rounded-lg border shadow-md">
@@ -150,9 +217,8 @@ onMounted(()=>{
                 </tbody>
             </table>
         </div>
-        <div></div>
         <alert v-bind:success="status"></alert>
-        <div class="flex justify-center">
+        <!-- <div class="flex justify-center">
             <v-pagination
                 v-model="page"
                 :pages="metaVehiculo.last_page"
@@ -160,11 +226,36 @@ onMounted(()=>{
                 active-color="rgba(59, 130, 246, var(--tw-bg-opacity))"
                 @update:modelValue="getVehiculos"
             />
+        </div> -->
+        <div class="flex justify-center py-4">
+            <ul class="inline-flex -space-x-px">
+              <li class="">
+                    <a class="cursor-pointer bg-white border border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 ml-0 rounded-l-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" @click.prevent="changePage(metaVehiculo.current_page - 1)">
+                    Anterior
+                    </a>
+                </li>
+                <li v-for="page in pages" :key="page" class="">
+                    <template v-if="page === metaVehiculo.current_page">
+                        <a class="cursor-pointer bg-gray-100 border border-gray-300 text-gray-700 hover:bg-gray-100 hover:text-gray-700 leading-tight py-2 px-3 dark:bg-gray-700 dark:border-gray-700 dark:text-white" @click.prevent="changePage(page)">{{ page }}</a>
+                    </template>
+                    <template v-if="page != metaVehiculo.current_page">
+                        <a class="cursor-pointer bg-white border border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" @click.prevent="changePage(page)">{{ page }}</a>
+                    </template>
+                </li>
+              
+                <li class="">
+                    <a class="cursor-pointer bg-white border border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 rounded-r-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" @click.prevent="changePage(metaVehiculo.current_page + 1)">
+                        Siguiente
+                    </a>
+                </li>
+            </ul>
         </div>
         
     </div>
 </template>
 
 <style>
-
+    .active{
+        background-color: rgba(185, 28, 28, var(--tw-bg-opacity));
+    }
 </style>

@@ -16,6 +16,10 @@ export default function useVehiculos(){
     const metaVehiculo = ref([])
     const status = ref([])
 
+    //Search
+    /* const searchText = ref('') */
+    const searchResult = ref([])
+
     const errorsVehiculo = ref('')
 
     const getVehiculo = async (id) =>{
@@ -26,8 +30,12 @@ export default function useVehiculos(){
         estado.value = response.data.data.estado
     }
 
-
-    
+    const searchVehiculos = async (data) =>{
+        let response = await localAxios.get(`/api/search?q=${data}`)
+        searchResult.value = response.data
+        metaVehiculo.value = response.data.meta
+        console.log(searchResult.value)
+    }
     
     const storeVehiculo = async (formData) =>{
         
@@ -57,10 +65,23 @@ export default function useVehiculos(){
         
     }
 
-    const getVehiculos = async (page) =>{
-        let response = await localAxios.get('/api/vehiculos?page='+page)
+    const getVehiculos = async (page, data) =>{
+        console.log(page)
+        /* let response = await localAxios.get(`/api/search?page=${page}&q=${data}`)
         vehiculos.value = response.data
-        metaVehiculo.value = response.data.meta
+        metaVehiculo.value = response.data.meta */
+        if (page) {
+            let response = await localAxios.get(`/api/search?page=${page}`)
+            vehiculos.value = response.data
+            metaVehiculo.value = response.data.meta
+            console.log(metaVehiculo.value, vehiculos.value)
+        }if (page && data.length > 0) {
+            let response = await localAxios.get(`/api/search?page=${page}&q=${data}`)
+            vehiculos.value = response.data
+            metaVehiculo.value = response.data.meta
+            console.log(metaVehiculo.value)
+        }
+        
     }
 
     
@@ -102,5 +123,8 @@ export default function useVehiculos(){
         errorsVehiculo,
         exportVehiculos,
         status,
+        searchVehiculos,
+        /* searchText, */
+        searchResult
     }
 }
