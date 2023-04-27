@@ -59,6 +59,7 @@ export default {
                     <input type="password" placeholder="Password Confirmation" v-model="form.password_confirmation"
                         class="my-3 w-full border-none bg-transparent outline-none focus:outline-none" />
                 </div>
+                <span v-if="score === 0">Use better password</span>
                 <button
                     class="w-full rounded-2xl border-b-4 border-b-blue-600 bg-blue-500 py-3 font-bold text-white hover:bg-blue-400 active:translate-y-[0.125rem] active:border-b-blue-400">
                     LOG IN
@@ -71,5 +72,30 @@ export default {
 </template>
 
 <style>
-
+.po-password-strength-bar {
+    border-radius: 2px;
+    transition: all 0.2s linear;
+    height: 5px;
+    margin-top: 8px;
+  }
+  
+  .po-password-strength-bar.risky {
+    background-color: #f95e68;
+  }
+  
+  .po-password-strength-bar.guessable {
+    background-color: #fb964d;
+  }
+  
+  .po-password-strength-bar.weak {
+    background-color: #fdd244;
+  }
+  
+  .po-password-strength-bar.safe {
+    background-color: #b0dc53;
+  }
+  
+  .po-password-strength-bar.secure {
+    background-color: #35cc62;
+  }
 </style>

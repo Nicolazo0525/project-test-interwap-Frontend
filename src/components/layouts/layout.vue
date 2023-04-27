@@ -30,6 +30,7 @@ const changeDarkMode = () => {
             <ul class="flex items-center gap-5 text-base font-bold">
                 <template v-if="authStore.user">
                     <li><router-link :to="{name: 'IndexVehiculos'}" class="hover:text-cyan-500 transition-colors">Vehiculos</router-link></li>
+                    <li><button class="hover:text-cyan-500 transition-colors" @click="authStore.handleLogout">Logout</button></li>
                 </template>
                 <template v-if="!authStore.user">
                     <li><router-link :to="{name: 'login'}" class="hover:text-cyan-500 transition-colors">Login</router-link></li>

@@ -90,6 +90,7 @@ export const useAuthStore = defineStore('Auth',{
             this.authErrors = []
             await localAxios.post('/logout')
             this.authUser = null
+            this.router.push("/home");
         }
     }
 })

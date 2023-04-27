@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import useVehiculos from '../../composables/vehiculos';
+import { useAuthStore } from '../../stores/Auth';
 import Alert from "./Alert.vue"
 
 const props = defineProps({
@@ -9,7 +10,10 @@ const props = defineProps({
     },
 })
 
-const {getVehiculo, placa, telefono, color, estado, updateVehiculo, errorsVehiculo, status} = useVehiculos()
+const authStore = useAuthStore()
+
+const {getVehiculo, placa, telefono, color, estado, userId, updateVehiculo, errorsVehiculo, status} = useVehiculos()
+
 const formData = new FormData();
 
 onMounted(() => {
@@ -17,10 +21,12 @@ onMounted(() => {
 })
 
 const editVehiculo = async () =>{
+    
     formData.append('placa',placa.value);
     formData.append('telefono',telefono.value);
     formData.append('color',color.value);
     formData.append('estado',estado.value);
+    formData.append('userId',userId.value);
     for (const [key, value] of formData) {
         formData[key] = value
     }  
@@ -48,6 +54,10 @@ const editVehiculo = async () =>{
                 </div>
                 <div class="w-full rounded-2xl bg-gray-50 px-4 ring-2 ring-gray-200 focus-within:ring-blue-400">
                     <input type="text" placeholder="Color" v-model="color"  
+                        class="my-3 w-full border-none bg-transparent outline-none focus:outline-none" />
+                </div>
+                <div class="w-full rounded-2xl bg-gray-50 px-4 hidden ring-2 ring-gray-200 focus-within:ring-blue-400">
+                    <input type="text" v-model="userId"  
                         class="my-3 w-full border-none bg-transparent outline-none focus:outline-none" />
                 </div>
                 <div

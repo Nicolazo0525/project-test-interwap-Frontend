@@ -14,11 +14,6 @@ const {deleteVehiculos, status} = useVehiculos()
 const vehiculoId = ref(props.id)
 const closeModal = ref(false)
 
-console.log(vehiculoId.value)
-/* 
-watch(() => props.id, (newValId) => {
-    vehiculoId.value = newValId
-}) */
 function closeAlert(){
     closeModal.value = true
 }

@@ -3,7 +3,6 @@ import { onMounted,ref } from 'vue'
 import {useAuthStore} from '../../stores/Auth.js'
 
 const authStore = useAuthStore()
-/* console.log(authStore.errors.password[0]) */
 const form = ref({
     email: '',
     password: '',

@@ -1,11 +1,12 @@
 import axios from "axios";
-import { ref } from "vue";
+import { ref, onMounted, watch } from "vue";
 import { useRoute } from 'vue-router';
 import localAxios from "../localAxios";
+import { useAuthStore } from "../stores/Auth";
 
 export default function useVehiculos(){
-    
-    const apiKey = '153a9c7aee2713af4d40b96156cac8e3';
+
+    const authStore = useAuthStore()
 
     const placa = ref([])
     const telefono = ref([])
@@ -15,9 +16,10 @@ export default function useVehiculos(){
     const vehiculo = ref([])
     const metaVehiculo = ref([])
     const status = ref([])
+    const userId = ref('')
+    const vehiculosUserId = ref([])
 
     //Search
-    /* const searchText = ref('') */
     const searchResult = ref([])
 
     const errorsVehiculo = ref('')
@@ -28,22 +30,20 @@ export default function useVehiculos(){
         telefono.value = response.data.data.telefono
         color.value = response.data.data.color
         estado.value = response.data.data.estado
+        userId.value = response.data.data.user_id
     }
 
     const searchVehiculos = async (data) =>{
         let response = await localAxios.get(`/api/search?q=${data}`)
         searchResult.value = response.data
         metaVehiculo.value = response.data.meta
-        console.log(searchResult.value)
     }
     
     const storeVehiculo = async (formData) =>{
         
         try {
-            let csrfCookie = await localAxios.get('/sanctum/csrf-cookie');
-            let response = await localAxios.post('/api/vehiculos/', formData, csrfCookie)
+            let response = await localAxios.post('/api/vehiculos/', formData)
             status.value = response.data.status
-            console.log(status)
         } catch (error) {
             if (error.response.status === 422) {
                 errorsVehiculo.value = error.response.data.errors
@@ -54,8 +54,7 @@ export default function useVehiculos(){
 
     const updateVehiculo = async (formData, id) =>{
         try {
-            let csrfCookie = await localAxios.get('/sanctum/csrf-cookie');
-            let response = await localAxios.put('api/vehiculos/' + id, formData, csrfCookie)
+            let response = await localAxios.put('api/vehiculos/' + id, formData)
             status.value = response.data.status
         } catch (error) {
             if (error.response.status === 422) {
@@ -66,20 +65,18 @@ export default function useVehiculos(){
     }
 
     const getVehiculos = async (page, data) =>{
-        console.log(page)
-        /* let response = await localAxios.get(`/api/search?page=${page}&q=${data}`)
-        vehiculos.value = response.data
-        metaVehiculo.value = response.data.meta */
+        //Obtengo el usuario del store
+        await authStore.getUser()
+        //Asigno el id del usuario a userId
+        userId.value = authStore.user.id
         if (page) {
-            let response = await localAxios.get(`/api/search?page=${page}`)
+            let response = await localAxios.get(`/api/search/${userId.value}?page=${page}`)
             vehiculos.value = response.data
             metaVehiculo.value = response.data.meta
-            console.log(metaVehiculo.value, vehiculos.value)
         }if (page && data.length > 0) {
-            let response = await localAxios.get(`/api/search?page=${page}&q=${data}`)
+            let response = await localAxios.get(`/api/search/${userId.value}?page=${page}&q=${data}`)
             vehiculos.value = response.data
             metaVehiculo.value = response.data.meta
-            console.log(metaVehiculo.value)
         }
         
     }
@@ -87,7 +84,9 @@ export default function useVehiculos(){
     
     const exportVehiculos = async () =>{
 
-        let response = await localAxios.get('/api/export', { responseType: 'blob' })
+        await authStore.getUser()
+        userId.value = authStore.user.id
+        let response = await localAxios.get(`/api/export/${userId.value}`, { responseType: 'blob' })
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
         link.href = url
@@ -124,7 +123,7 @@ export default function useVehiculos(){
         exportVehiculos,
         status,
         searchVehiculos,
-        /* searchText, */
+        userId,
         searchResult
     }
 }

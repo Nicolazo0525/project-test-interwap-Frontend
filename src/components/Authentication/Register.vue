@@ -59,7 +59,11 @@ export default {
                 <template v-if="authStore.errors.password">
                     <span class="text-red-600 m-2">{{ authStore.errors.password[0] }}</span>
                 </template>
-                <password-meter :password="form.password" />
+                <span v-if="score === 0 || score === 1 || score === 2 || score === 3" class="w-full bg-red-400 text-red-700">
+                    Use better password
+                </span>
+                
+                <password-meter :password="form.password" @score="onScore"/>
                 <div class="w-full rounded-2xl bg-gray-50 px-4 ring-2 ring-gray-200 focus-within:ring-blue-400">
                     <input type="password" placeholder="Password Confirmation" v-model="form.password_confirmation"
                         class="my-3 w-full border-none bg-transparent outline-none focus:outline-none" />
@@ -89,5 +93,30 @@ export default {
 </template>
 
 <style>
-
+.po-password-strength-bar {
+    border-radius: 2px;
+    transition: all 0.2s linear;
+    height: 5px;
+    margin-top: 8px;
+  }
+  
+  .po-password-strength-bar.risky {
+    background-color: #f95e68;
+  }
+  
+  .po-password-strength-bar.guessable {
+    background-color: #fb964d;
+  }
+  
+  .po-password-strength-bar.weak {
+    background-color: #fdd244;
+  }
+  
+  .po-password-strength-bar.safe {
+    background-color: #b0dc53;
+  }
+  
+  .po-password-strength-bar.secure {
+    background-color: #35cc62;
+  }
 </style>

@@ -40,7 +40,7 @@ const routes = [
     {
         path: "/vehiculos/",
         name: "IndexVehiculos",
-        component: IndexVehiculos
+        component: IndexVehiculos,
     },
     {
         path: "/vehiculos-edit/:id",

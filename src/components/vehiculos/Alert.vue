@@ -12,9 +12,6 @@ const props = defineProps({
 const errorsVehiculo = ref(props.errorsVehiculo)
 const success = ref(props.success)
 
-console.log(success.value)
-
-
 watch(() => props.success, (newValSuccess) => {
     success.value = newValSuccess
 })

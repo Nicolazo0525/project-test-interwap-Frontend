@@ -6,6 +6,9 @@ import localAxios from '../../localAxios';
 import useVehiculos from '../../composables/vehiculos';
 import Alert from "./Alert.vue"
 import ModalDelete from './ModalDelete.vue';
+import { useAuthStore } from "../../stores/Auth";
+
+const authStore = useAuthStore()
 
 const {
         vehiculos,
@@ -26,6 +29,7 @@ const searchText = ref('')
 const searchResult = ref([])
 const vehiculo = ref([])
 const typingTimeout = ref(null)
+const userId = ref('');
 
 if (searchText.value.length > 0) {
     
@@ -35,6 +39,8 @@ if (searchText.value.length <= 0) {
     perPage.value = perPage;
     buscarVehiculos();
 }
+
+
 
 function deleteOption(id){
     showModal.value = true
@@ -209,11 +215,11 @@ function buscarVehiculos(){
         
                         
                     </template>
-                    <div class=" col-span-6">
-                        <template v-if="!vehiculos.data">
-                            <div class="text-center">No data</div>
+                    <tr class="text-center">
+                        <template v-if="vehiculos.data.length < 0">
+                            <td colspan="5">No data</td>
                         </template>
-                    </div>
+                    </tr>
                 </tbody>
             </table>
         </div>
@@ -229,7 +235,7 @@ function buscarVehiculos(){
         </div> -->
         <div class="flex justify-center py-4">
             <ul class="inline-flex -space-x-px">
-              <li class="">
+                <li class="" v-if="metaVehiculo.current_page > 1">
                     <a class="cursor-pointer bg-white border border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 ml-0 rounded-l-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" @click.prevent="changePage(metaVehiculo.current_page - 1)">
                     Anterior
                     </a>
@@ -243,7 +249,7 @@ function buscarVehiculos(){
                     </template>
                 </li>
               
-                <li class="">
+                <li class="" v-if="metaVehiculo.current_page < metaVehiculo.last_page">
                     <a class="cursor-pointer bg-white border border-gray-300 text-gray-500 hover:bg-gray-100 hover:text-gray-700 rounded-r-lg leading-tight py-2 px-3 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white" @click.prevent="changePage(metaVehiculo.current_page + 1)">
                         Siguiente
                     </a>
