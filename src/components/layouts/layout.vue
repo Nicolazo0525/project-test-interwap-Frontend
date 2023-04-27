@@ -1,6 +1,12 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import {useAuthStore} from '../../stores/Auth.js'
 
+const authStore = useAuthStore()
+
+onMounted(async() => {
+    await authStore.getUser()
+})
 if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
   document.documentElement.classList.add('dark')
 } else {
@@ -20,9 +26,15 @@ const changeDarkMode = () => {
 <template>
     <div class="shadow bg-white z-50">
         <div class="h-16 mx-auto px-12 flex items-center justify-between">
-            <a class="text-2xl hover:text-cyan-500 transition-colors cursor-pointer">Logo</a>
+            <router-link :to="{name: 'Home'}" class="text-2xl hover:text-cyan-500 transition-colors cursor-pointer">Logo</router-link>
             <ul class="flex items-center gap-5 text-base font-bold">
-                <li><router-link :to="{name: 'IndexVehiculos'}" class="hover:text-cyan-500 transition-colors">Vehiculos</router-link></li>
+                <template v-if="authStore.user">
+                    <li><router-link :to="{name: 'IndexVehiculos'}" class="hover:text-cyan-500 transition-colors">Vehiculos</router-link></li>
+                </template>
+                <template v-if="!authStore.user">
+                    <li><router-link :to="{name: 'login'}" class="hover:text-cyan-500 transition-colors">Login</router-link></li>
+                    <li><router-link :to="{name: 'register'}" class="hover:text-cyan-500 transition-colors">Register</router-link></li>
+                </template>
             </ul>
             <div class="flex justify-center">
                 <label for="toogleButton" class="flex items-center cursor-pointer">
