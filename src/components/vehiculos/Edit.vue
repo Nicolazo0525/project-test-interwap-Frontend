@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import useVehiculos from '../../composables/vehiculos';
 import { useAuthStore } from '../../stores/Auth';
 import Alert from "./Alert.vue"
@@ -12,16 +12,31 @@ const props = defineProps({
 
 const authStore = useAuthStore()
 
-const {getVehiculo, placa, telefono, color, estado, userId, updateVehiculo, errorsVehiculo, status} = useVehiculos()
+const {getVehiculo, placas, updateVehiculo, errorsVehiculo, status} = useVehiculos()
 
 const formData = new FormData();
 
-onMounted(() => {
-    getVehiculo(props.id)
+
+console.log(props.id)
+
+const placa = ref('')
+const telefono = ref('')
+const color = ref('')
+const estado = ref('')
+const userId = ref('')
+
+onMounted(async()=>{
+    const { data: vehiculo } = await getVehiculo(props.id)
+    if (vehiculo ) {
+      placa.value = vehiculo.placa
+      telefono.value = vehiculo.telefono
+      color.value = vehiculo.color
+      estado.value = vehiculo.estado
+      userId.value = vehiculo.user_id
+    }
 })
 
 const editVehiculo = async () =>{
-    
     formData.append('placa',placa.value);
     formData.append('telefono',telefono.value);
     formData.append('color',color.value);
@@ -32,6 +47,7 @@ const editVehiculo = async () =>{
     }  
     await updateVehiculo({...formData}, props.id)
 }
+
 
 
 

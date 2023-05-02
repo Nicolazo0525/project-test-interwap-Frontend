@@ -3,34 +3,38 @@ import { ref, onMounted, watch } from "vue";
 import { useRoute } from 'vue-router';
 import localAxios from "../localAxios";
 import { useAuthStore } from "../stores/Auth";
+import { data } from "autoprefixer";
 
 export default function useVehiculos(){
 
     const authStore = useAuthStore()
 
-    const placa = ref([])
-    const telefono = ref([])
-    const color = ref([])
-    const estado = ref([])
+    const placas = ref('')
+    const telefonos = ref([])
+    const colors = ref([])
+    const estados = ref([])
     const vehiculos = ref([])
     const vehiculo = ref([])
     const metaVehiculo = ref([])
     const status = ref([])
     const userId = ref('')
     const vehiculosUserId = ref([])
-
+    const data = {};
+    const loading = ref(false);
+    /* const getVehiculo = ref([]) */
     //Search
     const searchResult = ref([])
 
     const errorsVehiculo = ref('')
 
     const getVehiculo = async (id) =>{
-        let response = await localAxios.get('/api/vehiculos/'+id)
-        placa.value = response.data.data.placa
-        telefono.value = response.data.data.telefono
-        color.value = response.data.data.color
-        estado.value = response.data.data.estado
-        userId.value = response.data.data.user_id
+        const { data: { data } } = await localAxios.get(`/api/vehiculos/${id}`);
+        const { placa, telefono, color, estado, user_id } = data; 
+        
+        return{
+            data
+        }
+        
     }
 
     const searchVehiculos = async (data) =>{
@@ -108,10 +112,6 @@ export default function useVehiculos(){
     }
     
     return{
-        placa,
-        color,
-        telefono,
-        estado,
         vehiculos,
         metaVehiculo,
         storeVehiculo,
@@ -123,7 +123,7 @@ export default function useVehiculos(){
         exportVehiculos,
         status,
         searchVehiculos,
-        userId,
-        searchResult
+        searchResult,
+        loading,
     }
 }
