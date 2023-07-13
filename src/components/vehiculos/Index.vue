@@ -17,9 +17,9 @@ const {
         getVehiculos,
         exportVehiculos,
         searchVehiculos,
-        status
+        status,
+        loading
     } = useVehiculos()
-
 const perPage = ref(1);
 const showModal = ref(false)
 const idSelected = ref();
@@ -106,7 +106,6 @@ function buscarVehiculos(){
                     <button @click="buscarVehiculos" class="w-20 text-center items-center rounded-2xl border-b-4 border-b-blue-600 bg-blue-500 py-3 font-bold text-white hover:bg-blue-400 active:translate-y-[0.125rem] active:border-b-blue-400">Buscar</button>
                 </div> -->
             </div>
-            
             <div class="flex justify-end space-x-3 flex-col md:flex-row">
                 <router-link :to="{name: 'CreateVehiculo'}" class="w-20 text-center items-center rounded-2xl border-b-4 border-b-blue-600 bg-blue-500 py-3 font-bold text-white hover:bg-blue-400 active:translate-y-[0.125rem] active:border-b-blue-400">Create</router-link>
                 <a class="w-20 cursor-pointer text-center items-center rounded-2xl border-b-4 border-b-green-600 bg-green-500 py-3 font-bold text-white hover:bg-green-400 active:translate-y-[0.125rem] active:border-b-green-400" @click="exportVehiculos()">
@@ -224,6 +223,23 @@ function buscarVehiculos(){
             </table>
         </div>
         <alert v-bind:success="status"></alert>
+        <template v-if="loading = false">
+            <div class="border border-blue-300 shadow rounded-md p-4 max-w-sm w-full mx-auto">
+                <div class="animate-pulse flex space-x-4">
+                    <div class="rounded-full bg-slate-700 h-10 w-10"></div>
+                    <div class="flex-1 space-y-6 py-1">
+                    <div class="h-2 bg-slate-700 rounded"></div>
+                    <div class="space-y-3">
+                        <div class="grid grid-cols-3 gap-4">
+                        <div class="h-2 bg-slate-700 rounded col-span-2"></div>
+                        <div class="h-2 bg-slate-700 rounded col-span-1"></div>
+                        </div>
+                        <div class="h-2 bg-slate-700 rounded"></div>
+                    </div>
+                    </div>
+                </div>
+                </div>
+        </template>
         <!-- <div class="flex justify-center">
             <v-pagination
                 v-model="page"

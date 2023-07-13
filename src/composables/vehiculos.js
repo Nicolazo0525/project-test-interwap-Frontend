@@ -1,6 +1,5 @@
 import axios from "axios";
-import { ref, onMounted, watch } from "vue";
-import { useRoute } from 'vue-router';
+import { ref } from "vue";
 import localAxios from "../localAxios";
 import { useAuthStore } from "../stores/Auth";
 import { data } from "autoprefixer";
@@ -77,6 +76,11 @@ export default function useVehiculos(){
             let response = await localAxios.get(`/api/search/${userId.value}?page=${page}`)
             vehiculos.value = response.data
             metaVehiculo.value = response.data.meta
+            try {
+                loading.value = false
+            } catch (error) {
+                loading.value = true
+            }
         }if (page && data.length > 0) {
             let response = await localAxios.get(`/api/search/${userId.value}?page=${page}&q=${data}`)
             vehiculos.value = response.data

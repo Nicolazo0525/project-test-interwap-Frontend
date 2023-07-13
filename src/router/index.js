@@ -8,6 +8,7 @@ import ResetPassword from '../components/Authentication/ResetPassword.vue'
 import CreateVehiculo from '../components/vehiculos/Create.vue'
 import IndexVehiculos from '../components/vehiculos/Index.vue'
 import EditVehiculo from '../components/vehiculos/Edit.vue'
+import ProfileUser from '../components/Profile/ProfileUser.vue'
 
 const routes = [
     {
@@ -52,6 +53,11 @@ const routes = [
         path: "/vehiculos-create/",
         name: "CreateVehiculo",
         component: CreateVehiculo
+    },
+    {
+        path: "/ProfileUser/",
+        name: "ProfileUser",
+        component: ProfileUser
     },
 ]
 

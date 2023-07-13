@@ -27,7 +27,7 @@ const userId = ref('')
 
 onMounted(async()=>{
     const { data: vehiculo } = await getVehiculo(props.id)
-    if (vehiculo ) {
+    if (vehiculo) {
       placa.value = vehiculo.placa
       telefono.value = vehiculo.telefono
       color.value = vehiculo.color
